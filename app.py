@@ -3,30 +3,30 @@ import pandas as pd
 import pdfplumber
 import os
 from datetime import datetime
-import smtplib
-from email.mime.text import MIMEText
-from dotenv import load_dotenv
 import re
 import dateparser
+import plotly.express as px
 
-load_dotenv()
-
-EMAIL_USER = os.getenv("EMAIL_USER")
-EMAIL_PASS = os.getenv("EMAIL_PASS")
-SMTP_SERVER = os.getenv("SMTP_SERVER")
-SMTP_PORT = int(os.getenv("SMTP_PORT"))
-
+# ─────────────────────────────────────────────
+# CONFIG
+# ─────────────────────────────────────────────
 DATA_FILE = "data.csv"
 UPLOAD_FOLDER = "uploads"
+
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+st.set_page_config(layout="wide")
+st.title("📄 COI Compliance Tracker")
+
+# ─────────────────────────────────────────────
+# DATA
+# ─────────────────────────────────────────────
 def load_data():
     if os.path.exists(DATA_FILE):
         return pd.read_csv(DATA_FILE)
     else:
         df = pd.DataFrame(columns=[
-            "Vendor", "Email", "Policy Type", "Expiry Date",
-            "File", "Last Reminder Sent"
+            "Vendor", "Email", "Policy Type", "Expiry Date", "File"
         ])
         df.to_csv(DATA_FILE, index=False)
         return df
@@ -34,22 +34,11 @@ def load_data():
 def save_data(df):
     df.to_csv(DATA_FILE, index=False)
 
-def send_email(to_email, subject, message):
-    try:
-        msg = MIMEText(message)
-        msg["Subject"] = subject
-        msg["From"] = EMAIL_USER
-        msg["To"] = to_email
+df = load_data()
 
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            server.login(EMAIL_USER, EMAIL_PASS)
-            server.sendmail(EMAIL_USER, to_email, msg.as_string())
-        return True
-    except Exception as e:
-        print(e)
-        return False
-
+# ─────────────────────────────────────────────
+# PDF TEXT EXTRACTION
+# ─────────────────────────────────────────────
 def extract_text(file):
     text = ""
     with pdfplumber.open(file) as pdf:
@@ -77,72 +66,117 @@ def extract_expiry(text):
 
     return None
 
-def run_reminders(df):
-    today = datetime.today()
+# ─────────────────────────────────────────────
+# UPLOAD SECTION
+# ─────────────────────────────────────────────
+st.subheader("📤 Upload COI PDF")
 
-    for i, row in df.iterrows():
-        expiry = datetime.strptime(row["Expiry Date"], "%Y-%m-%d")
-        days_left = (expiry - today).days
-
-        if days_left in [30, 7, 1]:
-            if row["Last Reminder Sent"] == str(today.date()):
-                continue
-
-            msg = f"COI Expiry Reminder\nVendor: {row['Vendor']}\nExpiry: {row['Expiry Date']}\nDays left: {days_left}"
-
-            if send_email(row["Email"], "COI Reminder", msg):
-                df.at[i, "Last Reminder Sent"] = str(today.date())
-
-    save_data(df)
-
-st.title("COI Tracker (No AI)")
-
-df = load_data()
-
-st.subheader("Upload COI")
-file = st.file_uploader("Upload PDF", type=["pdf"])
+file = st.file_uploader("Upload Certificate of Insurance", type=["pdf"])
 
 if file:
     filepath = os.path.join(UPLOAD_FOLDER, file.name)
+
     with open(filepath, "wb") as f:
         f.write(file.getbuffer())
 
     text = extract_text(filepath)
     expiry = extract_expiry(text)
 
-    st.text_area("Preview", text[:1000])
+    st.text_area("PDF Preview", text[:1200], height=200)
 
     vendor = st.text_input("Vendor")
-    email = st.text_input("Email")
+    email = st.text_input("Email (optional)")
     policy = st.text_input("Policy Type")
 
     if expiry:
-        st.info(f"Detected expiry: {expiry}")
-        expiry_input = st.date_input("Confirm expiry", value=expiry)
+        st.info(f"Detected expiry date: {expiry}")
+        expiry_input = st.date_input("Confirm Expiry Date", value=expiry)
     else:
-        expiry_input = st.date_input("Enter expiry")
+        expiry_input = st.date_input("Enter Expiry Date")
 
-    if st.button("Save"):
+    if st.button("💾 Save COI"):
         new_row = {
             "Vendor": vendor,
             "Email": email,
             "Policy Type": policy,
             "Expiry Date": expiry_input.strftime("%Y-%m-%d"),
-            "File": filepath,
-            "Last Reminder Sent": ""
+            "File": filepath
         }
 
         df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
         save_data(df)
-        st.success("Saved")
 
-st.subheader("Dashboard")
+        st.success("COI saved successfully")
 
-if not df.empty:
+# ─────────────────────────────────────────────
+# STATUS ENGINE
+# ─────────────────────────────────────────────
+def build_timeline(df):
+    df = df.copy()
+
     df["Expiry Date"] = pd.to_datetime(df["Expiry Date"])
     df["Days Left"] = (df["Expiry Date"] - datetime.today()).dt.days
-    st.dataframe(df)
 
-if st.button("Run Reminders"):
-    run_reminders(df)
-    st.success("Reminders sent")
+    def status(d):
+        if d < 0:
+            return "Expired"
+        elif d < 7:
+            return "Critical"
+        elif d < 30:
+            return "Warning"
+        else:
+            return "Valid"
+
+    df["Status"] = df["Days Left"].apply(status)
+    return df
+
+# ─────────────────────────────────────────────
+# DASHBOARD
+# ─────────────────────────────────────────────
+st.subheader("📊 Dashboard")
+
+if not df.empty:
+    df_view = build_timeline(df)
+    st.dataframe(df_view, use_container_width=True)
+else:
+    st.info("No COIs yet")
+
+# ─────────────────────────────────────────────
+# TIMELINE VIEW (CALENDAR STYLE)
+# ─────────────────────────────────────────────
+st.subheader("📅 Compliance Timeline View")
+
+if not df.empty:
+    timeline_df = build_timeline(df)
+
+    fig = px.scatter(
+        timeline_df,
+        x="Expiry Date",
+        y="Vendor",
+        color="Status",
+        hover_data=["Policy Type", "Days Left"],
+        title="COI Expiry Timeline"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.info("No data for timeline")
+
+# ─────────────────────────────────────────────
+# WEEKLY RISK PANEL
+# ─────────────────────────────────────────────
+st.subheader("🚨 This Week's Compliance Risks")
+
+if not df.empty:
+    df_check = build_timeline(df)
+    upcoming = df_check[df_check["Days Left"] <= 7].sort_values("Days Left")
+
+    if not upcoming.empty:
+        for _, row in upcoming.iterrows():
+            st.error(
+                f"⚠️ {row['Vendor']} | {row['Policy Type']} | "
+                f"Expires {row['Expiry Date'].date()} "
+                f"({row['Days Left']} days left)"
+            )
+    else:
+        st.success("No urgent compliance issues")
