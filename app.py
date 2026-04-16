@@ -7,6 +7,10 @@ import re
 import dateparser
 import plotly.express as px
 
+# OCR imports (required for scanned PDFs)
+from pdf2image import convert_from_path
+import pytesseract
+
 # ─────────────────────────────────────────────
 # CONFIG
 # ─────────────────────────────────────────────
@@ -16,7 +20,7 @@ UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 st.set_page_config(layout="wide")
-st.title("📄 COI Compliance Tracker")
+st.title("📄 COI Compliance Tracker (OCR Enabled)")
 
 # ─────────────────────────────────────────────
 # DATA
@@ -24,12 +28,9 @@ st.title("📄 COI Compliance Tracker")
 def load_data():
     if os.path.exists(DATA_FILE):
         return pd.read_csv(DATA_FILE)
-    else:
-        df = pd.DataFrame(columns=[
-            "Vendor", "Email", "Policy Type", "Expiry Date", "File"
-        ])
-        df.to_csv(DATA_FILE, index=False)
-        return df
+    return pd.DataFrame(columns=[
+        "Vendor", "Email", "Policy Type", "Expiry Date", "File"
+    ])
 
 def save_data(df):
     df.to_csv(DATA_FILE, index=False)
@@ -37,40 +38,50 @@ def save_data(df):
 df = load_data()
 
 # ─────────────────────────────────────────────
-# DELETE FUNCTION
+# DELETE COI
 # ─────────────────────────────────────────────
 def delete_coi(index):
     global df
 
     row = df.iloc[index]
 
-    # delete file if exists
-    if "File" in df.columns:
-        file_path = row["File"]
-        if file_path and os.path.exists(file_path):
-            os.remove(file_path)
+    file_path = row.get("File")
+    if file_path and os.path.exists(file_path):
+        os.remove(file_path)
 
     df = df.drop(index).reset_index(drop=True)
     save_data(df)
+
     st.rerun()
 
 # ─────────────────────────────────────────────
-# PDF EXTRACTION (FIXED)
+# PDF + OCR EXTRACTION (FIXED CORE)
 # ─────────────────────────────────────────────
-def extract_text(file):
+def extract_text(file_path):
     text = ""
 
-    with pdfplumber.open(file) as pdf:
-        for page in pdf.pages:
-            page_text = page.extract_text()
+    # 1. Try normal extraction first
+    try:
+        with pdfplumber.open(file_path) as pdf:
+            for page in pdf.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
+    except:
+        pass
 
-            if page_text:
-                text += page_text + "\n"
-            else:
-                text += f"[Page {page.page_number}: no text detected]\n"
+    # 2. If empty → OCR fallback
+    if len(text.strip()) == 0:
+        images = convert_from_path(file_path)
+
+        for img in images:
+            text += pytesseract.image_to_string(img) + "\n"
 
     return text.strip()
 
+# ─────────────────────────────────────────────
+# EXPIRY DETECTION
+# ─────────────────────────────────────────────
 def extract_expiry(text):
     lines = text.split("\n")
     keywords = ["expiry", "expiration", "expires"]
@@ -83,6 +94,7 @@ def extract_expiry(text):
                 if parsed:
                     return parsed.date()
 
+    # fallback scan
     dates = re.findall(r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b", text)
     for d in dates:
         parsed = dateparser.parse(d)
@@ -99,22 +111,25 @@ st.subheader("📤 Upload COI PDF")
 file = st.file_uploader("Upload Certificate of Insurance", type=["pdf"])
 
 if file:
-    filepath = os.path.join(UPLOAD_FOLDER, file.name)
+    file_path = os.path.join(UPLOAD_FOLDER, file.name)
 
-    with open(filepath, "wb") as f:
+    with open(file_path, "wb") as f:
         f.write(file.getbuffer())
 
-    text = extract_text(filepath)
+    st.info("Extracting text (PDF + OCR if needed)...")
+    text = extract_text(file_path)
+
     expiry = extract_expiry(text)
 
-    st.text_area("📄 PDF Preview", text, height=250)
+    st.subheader("📄 Extracted Text")
+    st.text_area("", text if text else "No text found", height=250)
 
     vendor = st.text_input("Vendor")
     email = st.text_input("Email (optional)")
     policy = st.text_input("Policy Type")
 
     if expiry:
-        st.info(f"Detected expiry date: {expiry}")
+        st.success(f"Detected expiry: {expiry}")
         expiry_input = st.date_input("Confirm Expiry Date", value=expiry)
     else:
         expiry_input = st.date_input("Enter Expiry Date")
@@ -125,7 +140,7 @@ if file:
             "Email": email,
             "Policy Type": policy,
             "Expiry Date": expiry_input.strftime("%Y-%m-%d"),
-            "File": filepath
+            "File": file_path
         }
 
         df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -139,6 +154,7 @@ if file:
 # ─────────────────────────────────────────────
 def build_timeline(df):
     df = df.copy()
+
     df["Expiry Date"] = pd.to_datetime(df["Expiry Date"])
     df["Days Left"] = (df["Expiry Date"] - datetime.today()).dt.days
 
@@ -153,6 +169,7 @@ def build_timeline(df):
             return "Valid"
 
     df["Status"] = df["Days Left"].apply(status)
+
     return df
 
 # ─────────────────────────────────────────────
@@ -162,14 +179,12 @@ st.subheader("📊 Dashboard")
 
 if not df.empty:
     view = build_timeline(df)
-
     st.dataframe(view, use_container_width=True)
 
-    # DELETE BUTTONS
-    st.subheader("🗑️ Manage COIs")
+    st.subheader("🗑️ Delete COIs")
 
     for i, row in view.iterrows():
-        col1, col2, col3 = st.columns([3, 3, 1])
+        col1, col2, col3 = st.columns([4, 3, 1])
 
         with col1:
             st.write(row["Vendor"])
@@ -180,6 +195,9 @@ if not df.empty:
         with col3:
             if st.button("Delete", key=f"del_{i}"):
                 delete_coi(i)
+
+else:
+    st.info("No COIs uploaded yet")
 
 # ─────────────────────────────────────────────
 # TIMELINE VIEW
@@ -199,11 +217,9 @@ if not df.empty:
     )
 
     st.plotly_chart(fig, use_container_width=True)
-else:
-    st.info("No COIs available")
 
 # ─────────────────────────────────────────────
-# WEEKLY RISKS
+# URGENT RISKS
 # ─────────────────────────────────────────────
 st.subheader("🚨 Urgent Compliance (≤ 7 days)")
 
