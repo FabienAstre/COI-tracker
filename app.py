@@ -7,10 +7,6 @@ import re
 import dateparser
 import plotly.express as px
 
-# OCR imports (required for scanned PDFs)
-from pdf2image import convert_from_path
-import pytesseract
-
 # ─────────────────────────────────────────────
 # CONFIG
 # ─────────────────────────────────────────────
@@ -20,7 +16,7 @@ UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 st.set_page_config(layout="wide")
-st.title("📄 COI Compliance Tracker (OCR Enabled)")
+st.title("📄 COI Compliance Tracker (Stable Version)")
 
 # ─────────────────────────────────────────────
 # DATA
@@ -55,27 +51,17 @@ def delete_coi(index):
     st.rerun()
 
 # ─────────────────────────────────────────────
-# PDF + OCR EXTRACTION (FIXED CORE)
+# PDF EXTRACTION (TEXT ONLY - NO OCR)
 # ─────────────────────────────────────────────
 def extract_text(file_path):
     text = ""
 
-    # 1. Try normal extraction first
-    try:
-        with pdfplumber.open(file_path) as pdf:
-            for page in pdf.pages:
-                page_text = page.extract_text()
-                if page_text:
-                    text += page_text + "\n"
-    except:
-        pass
+    with pdfplumber.open(file_path) as pdf:
+        for page in pdf.pages:
+            page_text = page.extract_text()
 
-    # 2. If empty → OCR fallback
-    if len(text.strip()) == 0:
-        images = convert_from_path(file_path)
-
-        for img in images:
-            text += pytesseract.image_to_string(img) + "\n"
+            if page_text:
+                text += page_text + "\n"
 
     return text.strip()
 
@@ -94,7 +80,6 @@ def extract_expiry(text):
                 if parsed:
                     return parsed.date()
 
-    # fallback scan
     dates = re.findall(r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b", text)
     for d in dates:
         parsed = dateparser.parse(d)
@@ -108,7 +93,7 @@ def extract_expiry(text):
 # ─────────────────────────────────────────────
 st.subheader("📤 Upload COI PDF")
 
-file = st.file_uploader("Upload Certificate of Insurance", type=["pdf"])
+file = st.file_uploader("Upload Certificate of Insurance (Text PDFs only)", type=["pdf"])
 
 if file:
     file_path = os.path.join(UPLOAD_FOLDER, file.name)
@@ -116,13 +101,14 @@ if file:
     with open(file_path, "wb") as f:
         f.write(file.getbuffer())
 
-    st.info("Extracting text (PDF + OCR if needed)...")
     text = extract_text(file_path)
-
     expiry = extract_expiry(text)
 
-    st.subheader("📄 Extracted Text")
-    st.text_area("", text if text else "No text found", height=250)
+    # PDF preview (safe fallback)
+    if text:
+        st.text_area("📄 Extracted Text", text[:3000], height=250)
+    else:
+        st.warning("⚠️ No text detected (likely scanned PDF - not supported in this version)")
 
     vendor = st.text_input("Vendor")
     email = st.text_input("Email (optional)")
@@ -169,7 +155,6 @@ def build_timeline(df):
             return "Valid"
 
     df["Status"] = df["Days Left"].apply(status)
-
     return df
 
 # ─────────────────────────────────────────────
@@ -181,7 +166,7 @@ if not df.empty:
     view = build_timeline(df)
     st.dataframe(view, use_container_width=True)
 
-    st.subheader("🗑️ Delete COIs")
+    st.subheader("🗑️ Manage COIs")
 
     for i, row in view.iterrows():
         col1, col2, col3 = st.columns([4, 3, 1])
@@ -217,6 +202,9 @@ if not df.empty:
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
+else:
+    st.info("No data available")
 
 # ─────────────────────────────────────────────
 # URGENT RISKS
