@@ -37,14 +37,39 @@ def save_data(df):
 df = load_data()
 
 # ─────────────────────────────────────────────
-# PDF TEXT EXTRACTION
+# DELETE FUNCTION
+# ─────────────────────────────────────────────
+def delete_coi(index):
+    global df
+
+    row = df.iloc[index]
+
+    # delete file if exists
+    if "File" in df.columns:
+        file_path = row["File"]
+        if file_path and os.path.exists(file_path):
+            os.remove(file_path)
+
+    df = df.drop(index).reset_index(drop=True)
+    save_data(df)
+    st.rerun()
+
+# ─────────────────────────────────────────────
+# PDF EXTRACTION (FIXED)
 # ─────────────────────────────────────────────
 def extract_text(file):
     text = ""
+
     with pdfplumber.open(file) as pdf:
         for page in pdf.pages:
-            text += page.extract_text() or ""
-    return text
+            page_text = page.extract_text()
+
+            if page_text:
+                text += page_text + "\n"
+            else:
+                text += f"[Page {page.page_number}: no text detected]\n"
+
+    return text.strip()
 
 def extract_expiry(text):
     lines = text.split("\n")
@@ -82,7 +107,7 @@ if file:
     text = extract_text(filepath)
     expiry = extract_expiry(text)
 
-    st.text_area("PDF Preview", text[:1200], height=200)
+    st.text_area("📄 PDF Preview", text, height=250)
 
     vendor = st.text_input("Vendor")
     email = st.text_input("Email (optional)")
@@ -107,13 +132,13 @@ if file:
         save_data(df)
 
         st.success("COI saved successfully")
+        st.rerun()
 
 # ─────────────────────────────────────────────
 # STATUS ENGINE
 # ─────────────────────────────────────────────
 def build_timeline(df):
     df = df.copy()
-
     df["Expiry Date"] = pd.to_datetime(df["Expiry Date"])
     df["Days Left"] = (df["Expiry Date"] - datetime.today()).dt.days
 
@@ -136,21 +161,36 @@ def build_timeline(df):
 st.subheader("📊 Dashboard")
 
 if not df.empty:
-    df_view = build_timeline(df)
-    st.dataframe(df_view, use_container_width=True)
-else:
-    st.info("No COIs yet")
+    view = build_timeline(df)
+
+    st.dataframe(view, use_container_width=True)
+
+    # DELETE BUTTONS
+    st.subheader("🗑️ Manage COIs")
+
+    for i, row in view.iterrows():
+        col1, col2, col3 = st.columns([3, 3, 1])
+
+        with col1:
+            st.write(row["Vendor"])
+
+        with col2:
+            st.write(row["Expiry Date"])
+
+        with col3:
+            if st.button("Delete", key=f"del_{i}"):
+                delete_coi(i)
 
 # ─────────────────────────────────────────────
-# TIMELINE VIEW (CALENDAR STYLE)
+# TIMELINE VIEW
 # ─────────────────────────────────────────────
-st.subheader("📅 Compliance Timeline View")
+st.subheader("📅 Compliance Timeline")
 
 if not df.empty:
-    timeline_df = build_timeline(df)
+    timeline = build_timeline(df)
 
     fig = px.scatter(
-        timeline_df,
+        timeline,
         x="Expiry Date",
         y="Vendor",
         color="Status",
@@ -160,23 +200,22 @@ if not df.empty:
 
     st.plotly_chart(fig, use_container_width=True)
 else:
-    st.info("No data for timeline")
+    st.info("No COIs available")
 
 # ─────────────────────────────────────────────
-# WEEKLY RISK PANEL
+# WEEKLY RISKS
 # ─────────────────────────────────────────────
-st.subheader("🚨 This Week's Compliance Risks")
+st.subheader("🚨 Urgent Compliance (≤ 7 days)")
 
 if not df.empty:
-    df_check = build_timeline(df)
-    upcoming = df_check[df_check["Days Left"] <= 7].sort_values("Days Left")
+    check = build_timeline(df)
+    urgent = check[check["Days Left"] <= 7].sort_values("Days Left")
 
-    if not upcoming.empty:
-        for _, row in upcoming.iterrows():
+    if not urgent.empty:
+        for _, row in urgent.iterrows():
             st.error(
-                f"⚠️ {row['Vendor']} | {row['Policy Type']} | "
-                f"Expires {row['Expiry Date'].date()} "
-                f"({row['Days Left']} days left)"
+                f"{row['Vendor']} | {row['Policy Type']} | "
+                f"{row['Expiry Date'].date()} | {row['Days Left']} days left"
             )
     else:
-        st.success("No urgent compliance issues")
+        st.success("No urgent COIs")
