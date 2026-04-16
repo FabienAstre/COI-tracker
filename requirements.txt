@@ -2,4 +2,4 @@ streamlit
 pandas
 pdfplumber
 python-dotenv
-openai
+dateparser

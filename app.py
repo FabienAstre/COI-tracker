@@ -6,12 +6,10 @@ from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
-from openai import OpenAI
-import json
+import re
+import dateparser
 
 load_dotenv()
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 EMAIL_USER = os.getenv("EMAIL_USER")
 EMAIL_PASS = os.getenv("EMAIL_PASS")
@@ -20,7 +18,6 @@ SMTP_PORT = int(os.getenv("SMTP_PORT"))
 
 DATA_FILE = "data.csv"
 UPLOAD_FOLDER = "uploads"
-
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def load_data():
@@ -58,32 +55,27 @@ def extract_text(file):
     with pdfplumber.open(file) as pdf:
         for page in pdf.pages:
             text += page.extract_text() or ""
-    return text[:12000]
+    return text
 
-def ai_extract(text):
-    prompt = f"""
-    Extract vendor name, policy type, expiry date (YYYY-MM-DD), and email from this COI document.
-    Return JSON only:
-    {{
-        "vendor": "",
-        "policy_type": "",
-        "expiry_date": "",
-        "email": ""
-    }}
-    Document:
-    {text}
-    """
+def extract_expiry(text):
+    lines = text.split("\n")
+    keywords = ["expiry", "expiration", "expires"]
 
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0
-    )
+    for line in lines:
+        if any(k in line.lower() for k in keywords):
+            dates = re.findall(r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b", line)
+            for d in dates:
+                parsed = dateparser.parse(d)
+                if parsed:
+                    return parsed.date()
 
-    try:
-        return json.loads(response.choices[0].message.content)
-    except:
-        return None
+    dates = re.findall(r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b", text)
+    for d in dates:
+        parsed = dateparser.parse(d)
+        if parsed:
+            return parsed.date()
+
+    return None
 
 def run_reminders(df):
     today = datetime.today()
@@ -96,22 +88,14 @@ def run_reminders(df):
             if row["Last Reminder Sent"] == str(today.date()):
                 continue
 
-            msg = f"""
-            COI Expiry Reminder
+            msg = f"COI Expiry Reminder\nVendor: {row['Vendor']}\nExpiry: {row['Expiry Date']}\nDays left: {days_left}"
 
-            Vendor: {row['Vendor']}
-            Policy: {row['Policy Type']}
-            Expiry: {row['Expiry Date']}
-            Days left: {days_left}
-            """
-
-            if send_email(row["Email"], "COI Expiry Reminder", msg):
+            if send_email(row["Email"], "COI Reminder", msg):
                 df.at[i, "Last Reminder Sent"] = str(today.date())
 
     save_data(df)
 
-st.set_page_config(layout="wide")
-st.title("AI COI Tracker")
+st.title("COI Tracker (No AI)")
 
 df = load_data()
 
@@ -123,30 +107,34 @@ if file:
     with open(filepath, "wb") as f:
         f.write(file.getbuffer())
 
-    with st.spinner("Extracting..."):
-        text = extract_text(filepath)
-        data = ai_extract(text)
+    text = extract_text(filepath)
+    expiry = extract_expiry(text)
 
-    if data:
-        vendor = st.text_input("Vendor", data.get("vendor", ""))
-        email = st.text_input("Email", data.get("email", ""))
-        policy = st.text_input("Policy Type", data.get("policy_type", ""))
-        expiry = st.text_input("Expiry Date (YYYY-MM-DD)", data.get("expiry_date", ""))
+    st.text_area("Preview", text[:1000])
 
-        if st.button("Save"):
-            new_row = {
-                "Vendor": vendor,
-                "Email": email,
-                "Policy Type": policy,
-                "Expiry Date": expiry,
-                "File": filepath,
-                "Last Reminder Sent": ""
-            }
+    vendor = st.text_input("Vendor")
+    email = st.text_input("Email")
+    policy = st.text_input("Policy Type")
 
-            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-            save_data(df)
+    if expiry:
+        st.info(f"Detected expiry: {expiry}")
+        expiry_input = st.date_input("Confirm expiry", value=expiry)
+    else:
+        expiry_input = st.date_input("Enter expiry")
 
-            st.success("Saved")
+    if st.button("Save"):
+        new_row = {
+            "Vendor": vendor,
+            "Email": email,
+            "Policy Type": policy,
+            "Expiry Date": expiry_input.strftime("%Y-%m-%d"),
+            "File": filepath,
+            "Last Reminder Sent": ""
+        }
+
+        df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+        save_data(df)
+        st.success("Saved")
 
 st.subheader("Dashboard")
 
@@ -157,4 +145,4 @@ if not df.empty:
 
 if st.button("Run Reminders"):
     run_reminders(df)
-    st.success("Done")
+    st.success("Reminders sent")
