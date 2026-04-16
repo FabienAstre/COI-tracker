@@ -1,5 +1,5 @@
 streamlit
 pandas
 pdfplumber
-python-dotenv
 dateparser
+plotly
