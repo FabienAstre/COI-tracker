@@ -424,7 +424,21 @@ with tab1:
         else:
             filtered = filtered[filtered["COI Status"] == status_filter]
 
-    filtered = filtered.sort_values("COI Days Left", ascending=True)
+    # Sort control
+    sort_col_map = {
+        "COI Expiry (default)": ("COI Days Left", True),
+        "Vendor (A→Z)":         ("Vendor", True),
+        "Vendor (Z→A)":         ("Vendor", False),
+        "COI Expiry (earliest)": ("COI Days Left", True),
+        "COI Expiry (latest)":   ("COI Days Left", False),
+        "WorkSafe Expiry (earliest)": ("WS Days Left", True),
+        "WorkSafe Expiry (latest)":   ("WS Days Left", False),
+        "COI Status":            ("COI Status", True),
+        "WS Status":             ("WS Status", True),
+    }
+    sort_choice = st.selectbox("↕ Sort by", list(sort_col_map.keys()), key="sort_choice")
+    sort_field, sort_asc = sort_col_map[sort_choice]
+    filtered = filtered.sort_values(sort_field, ascending=sort_asc)
 
     st.markdown(f'<div style="font-family: Space Mono, monospace; font-size:11px; color:#666; margin-bottom:8px;">{len(filtered)} vendors shown</div>', unsafe_allow_html=True)
 
@@ -434,11 +448,22 @@ with tab1:
         "Inactive": "badge-inactive", "No COI": "badge-expired", "Unknown": "badge-inactive"
     }
 
-    # Table header
+    # Table header — clickable sort indicators
+    sort_arrows = {
+        "Vendor (A→Z)": "VENDOR ↑", "Vendor (Z→A)": "VENDOR ↓",
+        "COI Expiry (earliest)": "COI EXPIRY ↑", "COI Expiry (latest)": "COI EXPIRY ↓",
+        "COI Expiry (default)": "COI EXPIRY ↑",
+        "WorkSafe Expiry (earliest)": "WORKSAFE EXPIRY ↑", "WorkSafe Expiry (latest)": "WORKSAFE EXPIRY ↓",
+        "COI Status": "COI STATUS ↑", "WS Status": "WS STATUS ↑",
+    }
+    def hdr(label):
+        active = sort_arrows.get(sort_choice, "").startswith(label.split(" ↑")[0].split(" ↓")[0])
+        color = "#e05c2a" if active else "#555"
+        return f'<div style="font-family:Space Mono,monospace;font-size:10px;color:{color};letter-spacing:0.12em;padding-bottom:4px;border-bottom:1px solid #2a2f45;">{label}</div>'
     h1, h2, h3, h4, h5, h6, h7 = st.columns([3, 1.5, 1.5, 1.2, 1.2, 1, 1.5])
     for col, label in zip([h1, h2, h3, h4, h5, h6, h7],
                            ["VENDOR", "COI EXPIRY", "WORKSAFE EXPIRY", "COI STATUS", "WS STATUS", "OHS PLAN", "ACTIONS"]):
-        col.markdown(f'<div style="font-family:Space Mono,monospace;font-size:10px;color:#555;letter-spacing:0.12em;padding-bottom:4px;border-bottom:1px solid #2a2f45;">{label}</div>', unsafe_allow_html=True)
+        col.markdown(hdr(label), unsafe_allow_html=True)
 
     for i, row in filtered.iterrows():
         c1, c2, c3, c4, c5, c6, c7 = st.columns([3, 1.5, 1.5, 1.2, 1.2, 1, 1.5])
@@ -456,7 +481,7 @@ with tab1:
 
         with c7:
             wcb_num = str(row.get("WCB Number", "") or "").strip()
-            ws_url = "https://asmtclr.online.worksafebc.com/Default.aspx"
+            ws_url = "https://www.worksafebc.com/en/insurance/employer-coverage/clearance-letters"
             ca_col, cb_col = c7.columns(2)
             ca_col.markdown(f'<a href="{ws_url}" target="_blank" style="font-family:Space Mono,monospace;font-size:9px;color:#3498db;text-decoration:none;border:1px solid #3498db;padding:3px 5px;border-radius:2px;">WCB</a>', unsafe_allow_html=True)
             if cb_col.button("✏️", key=f"edit_{i}", help="Edit this vendor"):
