@@ -402,6 +402,17 @@ if not urgent.empty:
 # TABS
 # ─────────────────────────────────────────────
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📋 All Vendors", "📊 Analytics", "➕ Add / Edit", "📤 Upload COI PDF", "💬 Notes Feed", "✉️ Email Generator"])
+# ─────────────────────────────────────────────
+# ALERT BANNER
+# ─────────────────────────────────────────────
+urgent = active_view[active_view["COI Days Left"] <= 30].sort_values("COI Days Left")
+if not urgent.empty:
+    st.markdown('<div class="section-header">🚨 Urgent — COI Expiring Within 30 Days</div>', unsafe_allow_html=True)
+    for _, row in urgent.iterrows():
+        label = "EXPIRED" if row["COI Days Left"] < 0 else f"{row['COI Days Left']}d LEFT"
+        color = "#e74c3c" if row["COI Days Left"] < 0 else "#f39c12"
+        exp_str = row.get("COI Expiry", "N/A")
+        st.markdown(f'<div class="alert-banner"><span style="color:{color};font-weight:700;">[{label}]</span> &nbsp; <span style="color:#ddd;">{row["Vendor"]}</span> &nbsp;·&nbsp; <span style="color:#888;">COI: {exp_str}</span></div>', unsafe_allow_html=True)
 
 # ── TAB 1: VENDOR TABLE ──────────────────────
 with tab1:
