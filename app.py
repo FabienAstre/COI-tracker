@@ -457,16 +457,63 @@ with tab1:
         with c7:
             wcb_num = str(row.get("WCB Number", "") or "").strip()
             ws_url = "https://www.worksafebc.com/en/insurance/employer-coverage/clearance-letters"
-            if wcb_num:
-                wcb_label = f"CL #{wcb_num}"
-                wcb_tip = f"Open clearance letter for account {wcb_num}"
-            else:
-                wcb_label = "Clearance Letter ✎"
-                wcb_tip = "Enter WCB # in Edit tab"
             ca_col, cb_col = c7.columns(2)
-            ca_col.markdown(f'<a href="{ws_url}" target="_blank" title="{wcb_tip}" style="font-family:Space Mono,monospace;font-size:9px;color:#3498db;text-decoration:none;border:1px solid #3498db;padding:3px 5px;border-radius:2px;white-space:nowrap;">{wcb_label}</a>', unsafe_allow_html=True)
+            ca_col.markdown(f'<a href="{ws_url}" target="_blank" style="font-family:Space Mono,monospace;font-size:9px;color:#3498db;text-decoration:none;border:1px solid #3498db;padding:3px 5px;border-radius:2px;">WCB</a>', unsafe_allow_html=True)
             if cb_col.button("✏️", key=f"edit_{i}", help="Edit this vendor"):
-                st.session_state["selected_vendor_edit"] = row["Vendor"]
+                if st.session_state.get("inline_edit") == i:
+                    st.session_state.pop("inline_edit")
+                else:
+                    st.session_state["inline_edit"] = i
+
+        # Inline edit form — appears directly under the row
+        if st.session_state.get("inline_edit") == i:
+            with st.container():
+                st.markdown(f'<div style="background:#1a1e2e;border:1px solid #e05c2a;border-radius:4px;padding:16px;margin:4px 0 10px 0;">', unsafe_allow_html=True)
+                st.markdown(f'<div style="font-family:Barlow Condensed,sans-serif;font-weight:600;color:#e05c2a;letter-spacing:0.1em;margin-bottom:10px;">EDITING: {row["Vendor"]}</div>', unsafe_allow_html=True)
+                with st.form(key=f"inline_form_{i}"):
+                    ie1, ie2, ie3 = st.columns(3)
+                    with ie1:
+                        ie_vendor = st.text_input("Vendor Name", value=str(row.get("Vendor", "")))
+                        ie_email  = st.text_input("Email", value=str(row.get("Email", "") or ""))
+                        ie_wcb    = st.text_input("WCB Number", value=str(row.get("WCB Number", "") or ""))
+                    with ie2:
+                        try:
+                            ie_coi = st.date_input("COI Expiry", value=pd.to_datetime(row.get("COI Expiry")).date() if row.get("COI Expiry") else date.today())
+                        except:
+                            ie_coi = st.date_input("COI Expiry", value=date.today())
+                        try:
+                            ie_ws = st.date_input("WorkSafe Expiry", value=pd.to_datetime(row.get("WorkSafe Expiry")).date() if row.get("WorkSafe Expiry") else date.today())
+                        except:
+                            ie_ws = st.date_input("WorkSafe Expiry", value=date.today())
+                    with ie3:
+                        ie_ohs = st.selectbox("OHS Plan", ["", "Yes", "Electronic", "N/A"],
+                            index=["", "Yes", "Electronic", "N/A"].index(row.get("OHS Plan", "")) if row.get("OHS Plan", "") in ["", "Yes", "Electronic", "N/A"] else 0)
+                        ie_active = st.checkbox("Active", value=bool(row.get("Active", True)))
+                        ie_notes = st.text_input("Notes", value=str(row.get("Notes", "") or ""))
+                    fs_col, fc_col = st.columns([1, 1])
+                    with fs_col:
+                        ie_save = st.form_submit_button("💾 Save")
+                    with fc_col:
+                        ie_cancel = st.form_submit_button("✕ Cancel")
+                    if ie_save:
+                        for col in ["Vendor","Email","OHS Plan","COI Expiry","WorkSafe Expiry","Active","Notes","WCB Number"]:
+                            df[col] = df[col].astype(object)
+                        df.at[i, "Vendor"]       = ie_vendor
+                        df.at[i, "Email"]        = ie_email
+                        df.at[i, "WCB Number"]   = ie_wcb
+                        df.at[i, "OHS Plan"]     = ie_ohs
+                        df.at[i, "COI Expiry"]   = ie_coi.strftime("%Y-%m-%d")
+                        df.at[i, "WorkSafe Expiry"] = ie_ws.strftime("%Y-%m-%d")
+                        df.at[i, "Active"]       = ie_active
+                        df.at[i, "Notes"]        = ie_notes
+                        save_data(df)
+                        st.session_state.pop("inline_edit", None)
+                        st.success("Saved!")
+                        st.rerun()
+                    if ie_cancel:
+                        st.session_state.pop("inline_edit", None)
+                        st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
 
 # ── TAB 2: ANALYTICS ─────────────────────────
 with tab2:
@@ -616,7 +663,6 @@ with tab3:
                 except:
                     e_ws = st.date_input("WorkSafe Expiry", value=date.today())
                 e_active = st.checkbox("Active", value=bool(row.get("Active", True)))
-            e_wcb = st.text_input("WCB Account Number", value=str(row.get("WCB Number", "") or ""))
             e_notes = st.text_input("Notes", value=str(row.get("Notes", "") or ""))
 
             col_save, col_del = st.columns([1, 1])
@@ -635,7 +681,6 @@ with tab3:
                 df.at[idx, "COI Expiry"] = e_coi.strftime("%Y-%m-%d")
                 df.at[idx, "WorkSafe Expiry"] = e_ws.strftime("%Y-%m-%d")
                 df.at[idx, "Active"] = e_active
-                df.at[idx, "WCB Number"] = e_wcb
                 df.at[idx, "Notes"] = e_notes
                 save_data(df)
                 st.success("Changes saved")
