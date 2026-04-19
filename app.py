@@ -204,64 +204,64 @@ div[data-testid="stDataFrame"] {
 # SEED DATA — Aberdeen Mall Contractors
 # ─────────────────────────────────────────────
 SEED_DATA = [
-    {"Vendor": "Aces Asphalt Repair",             "COI Expiry": "2026-06-02",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "N/A",        "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Advanced Electrical Systems",      "COI Expiry": "2027-04-01",  "WorkSafe Expiry": "2026-07-01", "OHS Plan": "Yes",        "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Arcona Roofing",                   "COI Expiry": "2026-12-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "N/A",        "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Artistic Sign Services Ltd.",      "COI Expiry": "2022-09-12",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "N/A",        "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Entrance Systems Assa Abloy",      "COI Expiry": "",            "WorkSafe Expiry": "2024-04-01", "OHS Plan": "N/A",        "Active": True,  "Email": "", "Notes": "No COI on file"},
-    {"Vendor": "A&T Project Developments",         "COI Expiry": "2026-06-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "Yes",        "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "BA Dawson Blacktop Ltd.",          "COI Expiry": "2026-04-30",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "BEST Service Pros",                "COI Expiry": "2025-09-30",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Central Interior Rebuilders",      "COI Expiry": "2025-11-06",  "WorkSafe Expiry": "2025-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Chubb/Edwards",                    "COI Expiry": "2025-12-31",  "WorkSafe Expiry": "2025-08-29", "OHS Plan": "Yes",        "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Cona Flooring",                    "COI Expiry": "2026-01-15",  "WorkSafe Expiry": "2026-11-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Culture Care Landscaping",         "COI Expiry": "2027-04-11",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Custom Air Conditioning",          "COI Expiry": "2025-07-31",  "WorkSafe Expiry": "2025-01-01", "OHS Plan": "Electronic", "Active": False, "Email": "", "Notes": "No longer contractor. See Reliatech."},
-    {"Vendor": "Dawson Civil",                     "COI Expiry": "2025-11-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "Electronic", "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Evans Fire",                       "COI Expiry": "2025-03-15",  "WorkSafe Expiry": "2024-10-01", "OHS Plan": "",           "Active": False, "Email": "", "Notes": "Not currently using"},
-    {"Vendor": "Farmer Stratta",                   "COI Expiry": "2023-07-22",  "WorkSafe Expiry": "2023-01-01", "OHS Plan": "",           "Active": False, "Email": "", "Notes": "Not currently using"},
-    {"Vendor": "Guardteck Security",               "COI Expiry": "2023-03-01",  "WorkSafe Expiry": "2023-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "GFL",                              "COI Expiry": "2026-06-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Hardaker Concrete",                "COI Expiry": "2023-06-24",  "WorkSafe Expiry": "2023-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Howell Electric",                  "COI Expiry": "2023-01-23",  "WorkSafe Expiry": "2022-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Interior Locksmith",               "COI Expiry": "2025-11-10",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Interior Fire",                    "COI Expiry": "2025-08-02",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Interior Plumbing & Heating",      "COI Expiry": "2020-01-25",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": False, "Email": "", "Notes": "Not currently using"},
-    {"Vendor": "Job Squad (The)",                  "COI Expiry": "2026-06-02",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Justlane Sweeping",                "COI Expiry": "2025-08-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "1415040 BC Ltd"},
-    {"Vendor": "KJA Consulting Inc.",              "COI Expiry": "2027-12-01",  "WorkSafe Expiry": "2027-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "KTA Mechanical Inc.",              "COI Expiry": "2026-01-24",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Keltech Environmental",            "COI Expiry": "2026-12-01",  "WorkSafe Expiry": "2026-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Kimco Controls",                   "COI Expiry": "2026-01-29",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "Electronic", "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Klean Tech",                       "COI Expiry": "2025-08-28",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Kone",                             "COI Expiry": "2026-01-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Lyons Landscaping",                "COI Expiry": "2025-05-05",  "WorkSafe Expiry": "2024-07-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "MGBA Architecture",               "COI Expiry": "2026-08-30",  "WorkSafe Expiry": "2026-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "MTC Plumbing & Drain Cleaning",    "COI Expiry": "2026-08-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "Roto Rooter"},
-    {"Vendor": "Nutech Safety",                    "COI Expiry": "2025-04-30",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Olleck Contracting Ltd",           "COI Expiry": "2026-07-09",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Pinchin",                          "COI Expiry": "2025-10-30",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "R & D Construction",               "COI Expiry": "2026-09-27",  "WorkSafe Expiry": "2026-07-01", "OHS Plan": "Yes",        "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Response Fire Systems Ltd",        "COI Expiry": "2024-01-20",  "WorkSafe Expiry": "2023-07-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Riteway Fence",                    "COI Expiry": "2020-10-31",  "WorkSafe Expiry": "2020-04-01", "OHS Plan": "",           "Active": False, "Email": "", "Notes": "Not currently using"},
-    {"Vendor": "Service Plus",                     "COI Expiry": "2024-04-24",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "Yes",        "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "See Thru Window Cleaners (Ever Clear)", "COI Expiry": "2025-04-16", "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",    "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Service Master",                   "COI Expiry": "2019-02-14",  "WorkSafe Expiry": "2020-07-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Southwest Glass LTD",              "COI Expiry": "2025-08-21",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Spa Hills",                        "COI Expiry": "2026-09-22",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Sun Valley Painting",              "COI Expiry": "2025-04-10",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Sunny Green Environmental",        "COI Expiry": "2026-07-01",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Syndicate Lines and Contracting",  "COI Expiry": "2024-09-26",  "WorkSafe Expiry": "2024-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Total Power",                      "COI Expiry": "2025-11-30",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Total Vent Cleaning",              "COI Expiry": "2026-02-28",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "N & J Holdings"},
-    {"Vendor": "Troy Life & Fire Safety",          "COI Expiry": "2025-10-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Twin River Plumbing & Heating",    "COI Expiry": "2025-09-15",  "WorkSafe Expiry": "2026-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Vics Fire & Safety",               "COI Expiry": "2023-06-19",  "WorkSafe Expiry": "2024-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Westcoast Road Marking",           "COI Expiry": "2026-03-27",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Western Roofing",                  "COI Expiry": "2025-07-31",  "WorkSafe Expiry": "2025-07-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "WHM Wicke Herfst Maver",           "COI Expiry": "2024-08-02",  "WorkSafe Expiry": "2024-07-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Underwraps",                       "COI Expiry": "2020-08-08",  "WorkSafe Expiry": "2023-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
-    {"Vendor": "Underhill Geomatics",              "COI Expiry": "2024-09-12",  "WorkSafe Expiry": "2024-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": ""},
+    {"Vendor": "Aces Asphalt Repair",             "COI Expiry": "2026-06-02",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "N/A",        "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Advanced Electrical Systems",      "COI Expiry": "2027-04-01",  "WorkSafe Expiry": "2026-07-01", "OHS Plan": "Yes",        "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Arcona Roofing",                   "COI Expiry": "2026-12-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "N/A",        "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Artistic Sign Services Ltd.",      "COI Expiry": "2022-09-12",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "N/A",        "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Entrance Systems Assa Abloy",      "COI Expiry": "",            "WorkSafe Expiry": "2024-04-01", "OHS Plan": "N/A",        "Active": True,  "Email": "", "Notes": "No COI on file", "WCB Number": ""},
+    {"Vendor": "A&T Project Developments",         "COI Expiry": "2026-06-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "Yes",        "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "BA Dawson Blacktop Ltd.",          "COI Expiry": "2026-04-30",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "BEST Service Pros",                "COI Expiry": "2025-09-30",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Central Interior Rebuilders",      "COI Expiry": "2025-11-06",  "WorkSafe Expiry": "2025-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Chubb/Edwards",                    "COI Expiry": "2025-12-31",  "WorkSafe Expiry": "2025-08-29", "OHS Plan": "Yes",        "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Cona Flooring",                    "COI Expiry": "2026-01-15",  "WorkSafe Expiry": "2026-11-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Culture Care Landscaping",         "COI Expiry": "2027-04-11",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Custom Air Conditioning",          "COI Expiry": "2025-07-31",  "WorkSafe Expiry": "2025-01-01", "OHS Plan": "Electronic", "Active": False, "Email": "", "Notes": "No longer contractor. See Reliatech.", "WCB Number": ""},
+    {"Vendor": "Dawson Civil",                     "COI Expiry": "2025-11-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "Electronic", "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Evans Fire",                       "COI Expiry": "2025-03-15",  "WorkSafe Expiry": "2024-10-01", "OHS Plan": "",           "Active": False, "Email": "", "Notes": "Not currently using", "WCB Number": ""},
+    {"Vendor": "Farmer Stratta",                   "COI Expiry": "2023-07-22",  "WorkSafe Expiry": "2023-01-01", "OHS Plan": "",           "Active": False, "Email": "", "Notes": "Not currently using", "WCB Number": ""},
+    {"Vendor": "Guardteck Security",               "COI Expiry": "2023-03-01",  "WorkSafe Expiry": "2023-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "GFL",                              "COI Expiry": "2026-06-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Hardaker Concrete",                "COI Expiry": "2023-06-24",  "WorkSafe Expiry": "2023-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Howell Electric",                  "COI Expiry": "2023-01-23",  "WorkSafe Expiry": "2022-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Interior Locksmith",               "COI Expiry": "2025-11-10",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Interior Fire",                    "COI Expiry": "2025-08-02",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Interior Plumbing & Heating",      "COI Expiry": "2020-01-25",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": False, "Email": "", "Notes": "Not currently using", "WCB Number": ""},
+    {"Vendor": "Job Squad (The)",                  "COI Expiry": "2026-06-02",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Justlane Sweeping",                "COI Expiry": "2025-08-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "1415040 BC Ltd", "WCB Number": ""},
+    {"Vendor": "KJA Consulting Inc.",              "COI Expiry": "2027-12-01",  "WorkSafe Expiry": "2027-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "KTA Mechanical Inc.",              "COI Expiry": "2026-01-24",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Keltech Environmental",            "COI Expiry": "2026-12-01",  "WorkSafe Expiry": "2026-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Kimco Controls",                   "COI Expiry": "2026-01-29",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "Electronic", "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Klean Tech",                       "COI Expiry": "2025-08-28",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Kone",                             "COI Expiry": "2026-01-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Lyons Landscaping",                "COI Expiry": "2025-05-05",  "WorkSafe Expiry": "2024-07-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "MGBA Architecture",               "COI Expiry": "2026-08-30",  "WorkSafe Expiry": "2026-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "MTC Plumbing & Drain Cleaning",    "COI Expiry": "2026-08-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "Roto Rooter", "WCB Number": ""},
+    {"Vendor": "Nutech Safety",                    "COI Expiry": "2025-04-30",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Olleck Contracting Ltd",           "COI Expiry": "2026-07-09",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Pinchin",                          "COI Expiry": "2025-10-30",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "R & D Construction",               "COI Expiry": "2026-09-27",  "WorkSafe Expiry": "2026-07-01", "OHS Plan": "Yes",        "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Response Fire Systems Ltd",        "COI Expiry": "2024-01-20",  "WorkSafe Expiry": "2023-07-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Riteway Fence",                    "COI Expiry": "2020-10-31",  "WorkSafe Expiry": "2020-04-01", "OHS Plan": "",           "Active": False, "Email": "", "Notes": "Not currently using", "WCB Number": ""},
+    {"Vendor": "Service Plus",                     "COI Expiry": "2024-04-24",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "Yes",        "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "See Thru Window Cleaners (Ever Clear)", "COI Expiry": "2025-04-16", "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",    "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Service Master",                   "COI Expiry": "2019-02-14",  "WorkSafe Expiry": "2020-07-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Southwest Glass LTD",              "COI Expiry": "2025-08-21",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Spa Hills",                        "COI Expiry": "2026-09-22",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Sun Valley Painting",              "COI Expiry": "2025-04-10",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Sunny Green Environmental",        "COI Expiry": "2026-07-01",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Syndicate Lines and Contracting",  "COI Expiry": "2024-09-26",  "WorkSafe Expiry": "2024-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Total Power",                      "COI Expiry": "2025-11-30",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Total Vent Cleaning",              "COI Expiry": "2026-02-28",  "WorkSafe Expiry": "2026-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "N & J Holdings", "WCB Number": ""},
+    {"Vendor": "Troy Life & Fire Safety",          "COI Expiry": "2025-10-01",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Twin River Plumbing & Heating",    "COI Expiry": "2025-09-15",  "WorkSafe Expiry": "2026-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Vics Fire & Safety",               "COI Expiry": "2023-06-19",  "WorkSafe Expiry": "2024-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Westcoast Road Marking",           "COI Expiry": "2026-03-27",  "WorkSafe Expiry": "2025-10-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Western Roofing",                  "COI Expiry": "2025-07-31",  "WorkSafe Expiry": "2025-07-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "WHM Wicke Herfst Maver",           "COI Expiry": "2024-08-02",  "WorkSafe Expiry": "2024-07-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Underwraps",                       "COI Expiry": "2020-08-08",  "WorkSafe Expiry": "2023-01-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
+    {"Vendor": "Underhill Geomatics",              "COI Expiry": "2024-09-12",  "WorkSafe Expiry": "2024-04-01", "OHS Plan": "",           "Active": True,  "Email": "", "Notes": "", "WCB Number": ""},
 ]
 
 # ─────────────────────────────────────────────
@@ -296,7 +296,7 @@ def load_data():
     if os.path.exists(DATA_FILE):
         df = pd.read_csv(DATA_FILE)
         # Ensure all columns exist
-        for col in ["Vendor", "COI Expiry", "WorkSafe Expiry", "OHS Plan", "Active", "Email", "Notes", "File"]:
+        for col in ["Vendor", "COI Expiry", "WorkSafe Expiry", "OHS Plan", "Active", "Email", "Notes", "File", "WCB Number"]:
             if col not in df.columns:
                 df[col] = ""
         return df
@@ -455,13 +455,18 @@ with tab1:
         c6.markdown(f'<div style="font-size:11px;color:#888;padding:6px 0;">{row.get("OHS Plan","") or "—"}</div>', unsafe_allow_html=True)
 
         with c7:
-            vendor_encoded = row["Vendor"].replace(" ", "+")
-            ws_url = f"https://www.worksafebc.com/en/insurance/employer-coverage/clearance-letters"
+            wcb_num = str(row.get("WCB Number", "") or "").strip()
+            ws_url = "https://www.worksafebc.com/en/insurance/employer-coverage/clearance-letters"
+            if wcb_num:
+                wcb_label = f"CL #{wcb_num}"
+                wcb_tip = f"Open clearance letter for account {wcb_num}"
+            else:
+                wcb_label = "Clearance Letter ✎"
+                wcb_tip = "Enter WCB # in Edit tab"
             ca_col, cb_col = c7.columns(2)
-            ca_col.markdown(f'<a href="{ws_url}" target="_blank" style="font-family:Space Mono,monospace;font-size:10px;color:#3498db;text-decoration:none;border:1px solid #3498db;padding:3px 6px;border-radius:2px;">WCB</a>', unsafe_allow_html=True)
+            ca_col.markdown(f'<a href="{ws_url}" target="_blank" title="{wcb_tip}" style="font-family:Space Mono,monospace;font-size:9px;color:#3498db;text-decoration:none;border:1px solid #3498db;padding:3px 5px;border-radius:2px;white-space:nowrap;">{wcb_label}</a>', unsafe_allow_html=True)
             if cb_col.button("✏️", key=f"edit_{i}", help="Edit this vendor"):
-                st.session_state["edit_vendor"] = i
-                st.session_state["active_tab"] = "edit"
+                st.session_state["selected_vendor_edit"] = row["Vendor"]
 
 # ── TAB 2: ANALYTICS ─────────────────────────
 with tab2:
@@ -558,6 +563,7 @@ with tab3:
             new_coi = st.date_input("COI Expiry Date")
             new_ws = st.date_input("WorkSafeBC Clearance Expiry")
             new_active = st.checkbox("Active Contractor", value=True)
+        new_wcb_num = st.text_input("WCB Account Number")
         new_notes = st.text_input("Notes")
 
         submitted = st.form_submit_button("💾 Add Vendor")
@@ -571,6 +577,7 @@ with tab3:
                     "Active": new_active,
                     "Email": new_email,
                     "Notes": new_notes,
+                    "WCB Number": "",
                     "File": ""
                 }
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -583,7 +590,9 @@ with tab3:
     st.markdown('<div class="section-header" style="margin-top:32px;">Edit / Delete Existing Vendor</div>', unsafe_allow_html=True)
 
     vendor_names = df["Vendor"].tolist()
-    selected_vendor = st.selectbox("Select vendor to edit", ["— Select —"] + vendor_names)
+    default_vendor = st.session_state.get("selected_vendor_edit", "— Select —")
+    default_idx = (["— Select —"] + vendor_names).index(default_vendor) if default_vendor in vendor_names else 0
+    selected_vendor = st.selectbox("Select vendor to edit", ["— Select —"] + vendor_names, index=default_idx)
 
     if selected_vendor != "— Select —":
         idx = df[df["Vendor"] == selected_vendor].index[0]
@@ -594,6 +603,7 @@ with tab3:
             with col1:
                 e_vendor = st.text_input("Vendor Name", value=row.get("Vendor", ""))
                 e_email  = st.text_input("Email", value=row.get("Email", ""))
+                e_wcb    = st.text_input("WCB Account Number", value=str(row.get("WCB Number", "") or ""), placeholder="e.g. 123456")
                 e_ohs    = st.selectbox("OHS Plan", ["", "Yes", "Electronic", "N/A"],
                                          index=["", "Yes", "Electronic", "N/A"].index(row.get("OHS Plan", "")) if row.get("OHS Plan", "") in ["", "Yes", "Electronic", "N/A"] else 0)
             with col2:
@@ -606,7 +616,8 @@ with tab3:
                 except:
                     e_ws = st.date_input("WorkSafe Expiry", value=date.today())
                 e_active = st.checkbox("Active", value=bool(row.get("Active", True)))
-            e_notes = st.text_input("Notes", value=row.get("Notes", ""))
+            e_wcb = st.text_input("WCB Account Number", value=str(row.get("WCB Number", "") or ""))
+            e_notes = st.text_input("Notes", value=str(row.get("Notes", "") or ""))
 
             col_save, col_del = st.columns([1, 1])
             with col_save:
@@ -615,17 +626,21 @@ with tab3:
                 del_btn = st.form_submit_button("🗑️ Delete Vendor", type="secondary")
 
             if save_edit:
-                for col in ["Vendor", "Email", "OHS Plan", "COI Expiry", "WorkSafe Expiry", "Active", "Notes"]:
+                for col in ["Vendor", "Email", "OHS Plan", "COI Expiry", "WorkSafe Expiry", "Active", "Notes", "WCB Number"]:
                     df[col] = df[col].astype(object)
                 df.at[idx, "Vendor"] = e_vendor
                 df.at[idx, "Email"] = e_email
+                df.at[idx, "WCB Number"] = e_wcb
                 df.at[idx, "OHS Plan"] = e_ohs
                 df.at[idx, "COI Expiry"] = e_coi.strftime("%Y-%m-%d")
                 df.at[idx, "WorkSafe Expiry"] = e_ws.strftime("%Y-%m-%d")
                 df.at[idx, "Active"] = e_active
+                df.at[idx, "WCB Number"] = e_wcb
                 df.at[idx, "Notes"] = e_notes
                 save_data(df)
                 st.success("Changes saved")
+                if "edit_vendor_name" in st.session_state:
+                    del st.session_state["edit_vendor_name"]
                 st.rerun()
 
             if del_btn:
