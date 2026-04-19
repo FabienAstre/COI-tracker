@@ -551,6 +551,8 @@ with tab3:
                 del_btn = st.form_submit_button("🗑️ Delete Vendor", type="secondary")
 
             if save_edit:
+                for col in ["Vendor", "Email", "OHS Plan", "COI Expiry", "WorkSafe Expiry", "Active", "Notes"]:
+                    df[col] = df[col].astype(object)
                 df.at[idx, "Vendor"] = e_vendor
                 df.at[idx, "Email"] = e_email
                 df.at[idx, "OHS Plan"] = e_ohs
