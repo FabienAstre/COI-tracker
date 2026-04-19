@@ -158,9 +158,42 @@ div[data-testid="stDataFrame"] {
     border: 1px solid #2a2f45;
 }
 
-.stSelectbox > div, .stTextInput > div > div {
-    background-color: #1a1e2e !important;
+/* ── Input fields & text areas: white bg, dark text ── */
+.stTextInput > div > div > input,
+.stTextInput > div > div {
+    background-color: #ffffff !important;
+    color: #1a1a2e !important;
     border-color: #3a3f55 !important;
+}
+.stSelectbox > div > div,
+.stSelectbox > div > div > div {
+    background-color: #ffffff !important;
+    color: #1a1a2e !important;
+    border-color: #3a3f55 !important;
+}
+/* Dropdown menu options */
+[data-baseweb="select"] > div,
+[data-baseweb="popover"] li {
+    background-color: #ffffff !important;
+    color: #1a1a2e !important;
+}
+/* Text area (PDF preview) */
+.stTextArea > div > div > textarea {
+    background-color: #f8f8f8 !important;
+    color: #1a1a2e !important;
+    border-color: #3a3f55 !important;
+    font-family: 'Space Mono', monospace !important;
+    font-size: 12px !important;
+}
+/* Date input */
+.stDateInput > div > div > input {
+    background-color: #ffffff !important;
+    color: #1a1a2e !important;
+    border-color: #3a3f55 !important;
+}
+/* Search bar */
+.stTextInput input::placeholder {
+    color: #999 !important;
 }
 </style>
 """, unsafe_allow_html=True)
