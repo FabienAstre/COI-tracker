@@ -453,7 +453,7 @@ with tab2:
         labels={"COI Expiry dt": "Expiry Date"}
     )
     fig_tl.update_traces(marker=dict(size=10, line=dict(width=1, color="#0f1117")))
-    fig_tl.add_vline(x=datetime.today(), line_dash="dash", line_color="#e05c2a", annotation_text="TODAY")
+    fig_tl.add_vline(x=datetime.today().timestamp() * 1000, line_dash="dash", line_color="#e05c2a", annotation_text="TODAY")
     fig_tl.update_layout(
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(20,24,36,0.8)",
         font=dict(color="#ccc", family="Barlow Condensed"),
