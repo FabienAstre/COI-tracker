@@ -481,7 +481,7 @@ with tab1:
 
         with c7:
             wcb_num = str(row.get("WCB Number", "") or "").strip()
-            ws_url = "https://www.worksafebc.com/en/insurance/employer-coverage/clearance-letters"
+            ws_url = "https://asmtclr.online.worksafebc.com/Default.aspx"
             ca_col, cb_col = c7.columns(2)
             ca_col.markdown(f'<a href="{ws_url}" target="_blank" style="font-family:Space Mono,monospace;font-size:9px;color:#3498db;text-decoration:none;border:1px solid #3498db;padding:3px 5px;border-radius:2px;">WCB</a>', unsafe_allow_html=True)
             if cb_col.button("✏️", key=f"edit_{i}", help="Edit this vendor"):
