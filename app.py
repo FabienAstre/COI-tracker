@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import json
 import pdfplumber
 import os
 from datetime import datetime, date
@@ -13,6 +14,7 @@ import plotly.graph_objects as go
 DATA_FILE = "coi_data.csv"
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+NOTES_FILE = "vendor_notes.json"
 
 st.set_page_config(
     layout="wide",
@@ -265,6 +267,31 @@ SEED_DATA = [
 # ─────────────────────────────────────────────
 # DATA FUNCTIONS
 # ─────────────────────────────────────────────
+
+# ─────────────────────────────────────────────
+# NOTES / COMMENTS FEED
+# ─────────────────────────────────────────────
+def load_notes():
+    if os.path.exists(NOTES_FILE):
+        with open(NOTES_FILE) as f:
+            return json.load(f)
+    return {}
+
+def save_notes(notes):
+    with open(NOTES_FILE, "w") as f:
+        json.dump(notes, f, indent=2)
+
+def add_note(vendor, text, author="Facilities"):
+    notes = load_notes()
+    if vendor not in notes:
+        notes[vendor] = []
+    notes[vendor].insert(0, {
+        "text": text,
+        "author": author,
+        "ts": datetime.now().strftime("%Y-%m-%d %H:%M")
+    })
+    save_notes(notes)
+
 def load_data():
     if os.path.exists(DATA_FILE):
         df = pd.read_csv(DATA_FILE)
@@ -374,7 +401,7 @@ if not urgent.empty:
 # ─────────────────────────────────────────────
 # TABS
 # ─────────────────────────────────────────────
-tab1, tab2, tab3, tab4 = st.tabs(["📋 All Vendors", "📊 Analytics", "➕ Add / Edit", "📤 Upload COI PDF"])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📋 All Vendors", "📊 Analytics", "➕ Add / Edit", "📤 Upload COI PDF", "💬 Notes Feed", "✉️ Email Generator"])
 
 # ── TAB 1: VENDOR TABLE ──────────────────────
 with tab1:
@@ -408,13 +435,13 @@ with tab1:
     }
 
     # Table header
-    h1, h2, h3, h4, h5, h6, h7 = st.columns([3, 1.5, 1.5, 1.2, 1.2, 1, 1])
+    h1, h2, h3, h4, h5, h6, h7 = st.columns([3, 1.5, 1.5, 1.2, 1.2, 1, 1.5])
     for col, label in zip([h1, h2, h3, h4, h5, h6, h7],
-                           ["VENDOR", "COI EXPIRY", "WORKSAFE EXPIRY", "COI STATUS", "WS STATUS", "OHS PLAN", "ACTION"]):
+                           ["VENDOR", "COI EXPIRY", "WORKSAFE EXPIRY", "COI STATUS", "WS STATUS", "OHS PLAN", "ACTIONS"]):
         col.markdown(f'<div style="font-family:Space Mono,monospace;font-size:10px;color:#555;letter-spacing:0.12em;padding-bottom:4px;border-bottom:1px solid #2a2f45;">{label}</div>', unsafe_allow_html=True)
 
     for i, row in filtered.iterrows():
-        c1, c2, c3, c4, c5, c6, c7 = st.columns([3, 1.5, 1.5, 1.2, 1.2, 1, 1])
+        c1, c2, c3, c4, c5, c6, c7 = st.columns([3, 1.5, 1.5, 1.2, 1.2, 1, 1.5])
 
         active_dot = "🟢" if row["Active"] else "⚫"
         c1.markdown(f'<div style="font-family:Barlow Condensed,sans-serif;font-size:1em;font-weight:600;padding:6px 0;">{active_dot} {row["Vendor"]}</div>', unsafe_allow_html=True)
@@ -428,7 +455,11 @@ with tab1:
         c6.markdown(f'<div style="font-size:11px;color:#888;padding:6px 0;">{row.get("OHS Plan","") or "—"}</div>', unsafe_allow_html=True)
 
         with c7:
-            if st.button("✏️", key=f"edit_{i}", help="Edit this vendor"):
+            vendor_encoded = row["Vendor"].replace(" ", "+")
+            ws_url = f"https://www.worksafebc.com/en/insurance/employer-coverage/clearance-letters"
+            ca_col, cb_col = c7.columns(2)
+            ca_col.markdown(f'<a href="{ws_url}" target="_blank" style="font-family:Space Mono,monospace;font-size:10px;color:#3498db;text-decoration:none;border:1px solid #3498db;padding:3px 6px;border-radius:2px;">WCB</a>', unsafe_allow_html=True)
+            if cb_col.button("✏️", key=f"edit_{i}", help="Edit this vendor"):
                 st.session_state["edit_vendor"] = i
                 st.session_state["active_tab"] = "edit"
 
@@ -671,6 +702,154 @@ with tab4:
                 save_data(df)
                 st.success(f"COI updated for {sel}")
                 st.rerun()
+
+
+# ── TAB 5: NOTES FEED ────────────────────────
+with tab5:
+    st.markdown('<div class="section-header">Vendor Notes & Comments Feed</div>', unsafe_allow_html=True)
+
+    all_notes = load_notes()
+    vendor_list = df["Vendor"].sort_values().tolist()
+
+    col_n1, col_n2 = st.columns([2, 3])
+
+    with col_n1:
+        note_vendor = st.selectbox("Select Vendor", vendor_list, key="note_vendor_sel")
+        note_author = st.text_input("Your name", value="Facilities", key="note_author")
+        note_text = st.text_area("Add a note", height=100, key="note_text_input", placeholder="e.g. Called vendor — renewal submitted, expect COI by end of month.")
+        if st.button("💬 Post Note"):
+            if note_text.strip():
+                add_note(note_vendor, note_text.strip(), note_author.strip() or "Facilities")
+                st.success("Note added")
+                st.rerun()
+            else:
+                st.warning("Note cannot be empty")
+
+    with col_n2:
+        if note_vendor and note_vendor in all_notes and all_notes[note_vendor]:
+            st.markdown(f'<div style="font-family:Barlow Condensed,sans-serif;font-size:1em;font-weight:600;letter-spacing:0.1em;color:#e05c2a;margin-bottom:10px;">{note_vendor}</div>', unsafe_allow_html=True)
+            for entry in all_notes[note_vendor]:
+                st.markdown(f"""
+                <div style="background:#141824;border-left:3px solid #e05c2a;padding:10px 14px;margin-bottom:8px;border-radius:0 3px 3px 0;">
+                    <div style="font-family:Space Mono,monospace;font-size:10px;color:#555;margin-bottom:4px;">{entry['ts']} · {entry['author']}</div>
+                    <div style="font-family:Barlow Condensed,sans-serif;font-size:1em;color:#ddd;">{entry['text']}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.markdown('<div style="color:#555;font-family:Space Mono,monospace;font-size:12px;margin-top:20px;">No notes yet for this vendor.</div>', unsafe_allow_html=True)
+
+    # All recent notes across all vendors
+    st.markdown('<div class="section-header" style="margin-top:28px;">Recent Activity — All Vendors</div>', unsafe_allow_html=True)
+    all_entries = []
+    for vendor, entries in all_notes.items():
+        for e in entries:
+            all_entries.append({"vendor": vendor, **e})
+    if all_entries:
+        all_entries.sort(key=lambda x: x["ts"], reverse=True)
+        for entry in all_entries[:20]:
+            st.markdown(f"""
+            <div style="background:#141824;border:1px solid #2a2f45;padding:8px 14px;margin-bottom:5px;border-radius:3px;display:flex;gap:12px;align-items:baseline;">
+                <span style="font-family:Barlow Condensed,sans-serif;font-weight:600;color:#e05c2a;min-width:200px;">{entry['vendor']}</span>
+                <span style="font-family:Barlow Condensed,sans-serif;color:#ddd;flex:1;">{entry['text']}</span>
+                <span style="font-family:Space Mono,monospace;font-size:10px;color:#555;white-space:nowrap;">{entry['ts']} · {entry['author']}</span>
+            </div>
+            """, unsafe_allow_html=True)
+    else:
+        st.info("No notes posted yet across any vendor.")
+
+
+# ── TAB 6: EMAIL GENERATOR ───────────────────
+with tab6:
+    st.markdown('<div class="section-header">Email Renewal Request Generator</div>', unsafe_allow_html=True)
+
+    view_email = build_view(df)
+    active_email = view_email[view_email["Active"] == True]
+
+    col_e1, col_e2 = st.columns([1, 2])
+
+    with col_e1:
+        st.markdown('<div style="font-family:Space Mono,monospace;font-size:11px;color:#888;margin-bottom:8px;">SELECT VENDORS TO CONTACT</div>', unsafe_allow_html=True)
+
+        email_filter = st.selectbox("Filter by status", ["All Active", "Expired", "Critical (≤30d)", "Warning (≤90d)", "No COI"], key="email_filter")
+
+        if email_filter == "Expired":
+            email_pool = active_email[active_email["COI Status"] == "Expired"]
+        elif email_filter == "Critical (≤30d)":
+            email_pool = active_email[active_email["COI Status"].isin(["Critical", "Expired"])]
+        elif email_filter == "Warning (≤90d)":
+            email_pool = active_email[active_email["COI Status"].isin(["Warning", "Critical", "Expired"])]
+        elif email_filter == "No COI":
+            email_pool = active_email[active_email["COI Status"] == "No COI"]
+        else:
+            email_pool = active_email
+
+        selected_vendors = st.multiselect(
+            "Vendors to include",
+            email_pool["Vendor"].tolist(),
+            default=email_pool[email_pool["COI Status"].isin(["Expired", "Critical"])]["Vendor"].tolist()[:5],
+            key="email_vendors"
+        )
+
+        sender_name = st.text_input("Your name", value="Fabien Astre", key="email_sender")
+        sender_title = st.text_input("Your title", value="Facilities & Engineering Manager", key="email_title")
+        property_name = st.text_input("Property", value="Aberdeen Mall", key="email_property")
+        urgency = st.selectbox("Tone", ["Standard", "Urgent", "Final Notice"], key="email_tone")
+
+    with col_e2:
+        if selected_vendors:
+            for vendor in selected_vendors:
+                vrow = view_email[view_email["Vendor"] == vendor].iloc[0]
+                email_addr = vrow.get("Email", "") or ""
+                coi_exp = vrow.get("COI Expiry", "") or "not on file"
+                days_left = int(vrow["COI Days Left"]) if vrow["COI Days Left"] not in [9999, -9999] else None
+                status = vrow["COI Status"]
+
+                if status == "Expired":
+                    subject = f"URGENT: Expired Certificate of Insurance — {vendor}"
+                    status_line = f"our records show your Certificate of Insurance expired on {coi_exp}"
+                    action_line = "we require an updated COI immediately to continue work on the property"
+                elif status in ["Critical"]:
+                    subject = f"ACTION REQUIRED: COI Renewal Required — {vendor}"
+                    status_line = f"your Certificate of Insurance is set to expire on {coi_exp} ({days_left} days)"
+                    action_line = f"please provide a renewed COI before {coi_exp} to avoid any interruption to your contractor status"
+                elif urgency == "Final Notice":
+                    subject = f"FINAL NOTICE: Certificate of Insurance Renewal — {vendor}"
+                    status_line = f"your Certificate of Insurance expires on {coi_exp}"
+                    action_line = "this is our final notice — failure to provide an updated COI will result in suspension of contractor access"
+                else:
+                    subject = f"Certificate of Insurance Renewal — {vendor}"
+                    status_line = f"your Certificate of Insurance is scheduled to expire on {coi_exp}"
+                    action_line = "please arrange renewal and forward the updated certificate at your earliest convenience"
+
+                email_body = f"""Subject: {subject}
+
+To: {email_addr or '[vendor email]'}
+
+Dear {vendor} Team,
+
+I hope this message finds you well. I am writing to inform you that {status_line} on file with {property_name}.
+
+As part of our ongoing contractor compliance program, {action_line}. Please ensure the certificate names {property_name} as an additional insured and meets our minimum coverage requirements.
+
+Required documentation:
+  • Certificate of Insurance (minimum $2M general liability)
+  • WorkSafeBC Clearance Letter (if applicable)
+
+Please forward the updated documents to this email or contact me directly if you have any questions.
+
+Thank you for your continued partnership with {property_name}.
+
+Best regards,
+{sender_name}
+{sender_title}
+{property_name}"""
+
+                st.markdown(f'<div style="font-family:Barlow Condensed,sans-serif;font-weight:600;color:#e05c2a;letter-spacing:0.1em;margin:16px 0 6px 0;">{vendor} <span style="font-size:0.8em;color:#666;">— {status}</span></div>', unsafe_allow_html=True)
+                st.text_area("", value=email_body, height=320, key=f"email_{vendor}")
+                st.markdown("<hr style='border-color:#2a2f45;margin:8px 0;'>", unsafe_allow_html=True)
+        else:
+            st.markdown('<div style="color:#555;font-family:Space Mono,monospace;font-size:12px;margin-top:40px;text-align:center;">← Select vendors on the left to generate renewal emails</div>', unsafe_allow_html=True)
+
 
 # ─────────────────────────────────────────────
 # FOOTER
